@@ -29,4 +29,14 @@
         <Copy SourceFiles="$(OutputPath)/RapidEnum.Core.dll" DestinationFolder="$(MSBuildThisFileDirectory)../RapidEnum.Unity/Packages/com.hanachiru.rapidenum/netstandard2.0" />
         <Copy SourceFiles="$(OutputPath)/RapidEnum.Generators.dll" DestinationFolder="$(MSBuildThisFileDirectory)../RapidEnum.Unity/Packages/com.hanachiru.rapidenum/netstandard2.0" />
     </Target>
+
+    <ItemGroup>
+        <None Remove="AnalyzerReleases.Shipped.md" />
+        <None Remove="AnalyzerReleases.Unshipped.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+        <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+    </ItemGroup>
 </Project>
