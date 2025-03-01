@@ -1,0 +1,28 @@
+name: Auto-Merge
+
+on:
+  pull_request:
+    paths:
+      - RapidEnum.NuGet/RapidEnum.nuspec
+      - RapidEnum.Unity/Packages/com.hanachiru.rapidenum/package.json
+    paths-ignore:
+      - "**/*"
+
+jobs:
+  auto_merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'github-actions[bot]'
+    steps:
+      - name: Create GitHub App Token
+        uses: actions/create-github-app-token@v1.11.5
+        id: create-github-app-token
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+      - name: Enable auto-merge for Dependabot PRs
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ steps.create-github-app-token.outputs.token }}
+        run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --merge "$PR_URL"
