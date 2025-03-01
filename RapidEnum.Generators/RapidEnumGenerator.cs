@@ -36,7 +36,7 @@ public class RapidEnumGenerator : IIncrementalGenerator
 
                     if (classDeclarationSyntax.Parent is TypeDeclarationSyntax)
                         return new RapidEnumGeneratorContext(
-                            RapidEnumAnalyzer.MustBeNested, targetSymbol.Locations.FirstOrDefault() ?? Location.None,
+                            RapidEnumAnalyzer.MustNotBeNested, targetSymbol.Locations.FirstOrDefault() ?? Location.None,
                             targetSymbol.Name);
 
                     if(classDeclarationSyntax.Modifiers.Any(SyntaxKind.PartialKeyword) == false)

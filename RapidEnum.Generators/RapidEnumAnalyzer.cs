@@ -27,7 +27,7 @@ public static class RapidEnumAnalyzer
         isEnabledByDefault: true
     );
 
-    public static readonly DiagnosticDescriptor MustBeNested = new(
+    public static readonly DiagnosticDescriptor MustNotBeNested = new(
         id: $"{Id}003",
         title: "Attributes provided by RapidEnum are not available in nested classes",
         messageFormat: "Do not make class ‘{0}’ a nested class",
