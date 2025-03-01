@@ -5,8 +5,6 @@ on:
     paths:
       - RapidEnum.NuGet/RapidEnum.nuspec
       - RapidEnum.Unity/Packages/com.hanachiru.rapidenum/package.json
-    paths-ignore:
-      - "**/*"
 
 jobs:
   auto_merge:
