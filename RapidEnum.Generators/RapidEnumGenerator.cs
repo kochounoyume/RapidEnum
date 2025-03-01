@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace RapidEnum;
@@ -19,23 +20,46 @@ public class RapidEnumGenerator : IIncrementalGenerator
                 static (context, token) =>
                 {
                     token.ThrowIfCancellationRequested();
-                    if (context.TargetSymbol is not INamedTypeSymbol targetSymbol)
-                    {
-                        return null;
-                    }
+                    if (context.TargetSymbol is not INamedTypeSymbol targetSymbol) return null;
+                    if (context.TargetNode is not ClassDeclarationSyntax classDeclarationSyntax) return null;
+
+                    var enumSymbol = context.Attributes
+                        .FirstOrDefault(x => x?.AttributeClass?.Name == Constants.MarkerAttributeName)
+                        ?.ConstructorArguments.FirstOrDefault().Value as INamedTypeSymbol;
+
+                    if (enumSymbol == null) return null;
 
                     var accessibility = context.TargetSymbol.DeclaredAccessibility;
-                    if (accessibility != Accessibility.Public && accessibility != Accessibility.Internal) return null;
-                    var enumSymbol = context.Attributes
-                                .FirstOrDefault(x => x?.AttributeClass?.Name == Constants.MarkerAttributeName)
-                                ?.ConstructorArguments.FirstOrDefault().Value as INamedTypeSymbol;
-                    return enumSymbol == null ? null : new RapidEnumGeneratorContext(targetSymbol, enumSymbol);
+                    if (accessibility != Accessibility.Public && accessibility != Accessibility.Internal)
+                        return new RapidEnumGeneratorContext(RapidEnumAnalyzer.MustBeInternalOrPublic,
+                            targetSymbol.Locations.FirstOrDefault() ?? Location.None, targetSymbol.Name);
+
+                    if (classDeclarationSyntax.Parent is TypeDeclarationSyntax)
+                        return new RapidEnumGeneratorContext(
+                            RapidEnumAnalyzer.MustBeNested, targetSymbol.Locations.FirstOrDefault() ?? Location.None,
+                            targetSymbol.Name);
+
+                    if(classDeclarationSyntax.Modifiers.Any(SyntaxKind.PartialKeyword) == false)
+                        return new RapidEnumGeneratorContext(
+                            RapidEnumAnalyzer.MustBePartial, targetSymbol.Locations.FirstOrDefault() ?? Location.None,
+                            targetSymbol.Name);
+                    
+                    if(classDeclarationSyntax.Modifiers.Any(SyntaxKind.StaticKeyword) == false)
+                        return new RapidEnumGeneratorContext(
+                            RapidEnumAnalyzer.MustBeStatic, targetSymbol.Locations.FirstOrDefault() ?? Location.None,
+                            targetSymbol.Name);
+                    
+                    return new RapidEnumGeneratorContext(targetSymbol, enumSymbol);
                 }).Where(x => x != null);
 
         context.RegisterSourceOutput(classProvider, static (context, generationContext) =>
         {
-            if (generationContext == null)
+            if (generationContext == null) return;
+
+            if (!generationContext.DiagnosticDescriptor.Equals(RapidEnumAnalyzer.Default))
             {
+                context.ReportDiagnostic(Diagnostic.Create(generationContext.DiagnosticDescriptor,
+                    generationContext.DiagnosticLocation, generationContext.ClassName));
                 return;
             }
 
@@ -53,27 +77,30 @@ public class RapidEnumGenerator : IIncrementalGenerator
                 static (context, token) =>
                 {
                     token.ThrowIfCancellationRequested();
-                    if (context.TargetSymbol is not INamedTypeSymbol enumSymbol)
-                    {
-                        return null;
-                    }
+                    if (context.TargetSymbol is not INamedTypeSymbol enumSymbol) return null;
 
                     var generateStateMachineAttribute = context.Attributes
                         .FirstOrDefault(x => x.AttributeClass?.Name == Constants.AttributeName);
-
-                    if (enumSymbol.DeclaredAccessibility != Accessibility.Public &&
-                        enumSymbol.DeclaredAccessibility != Accessibility.Internal) return null;
                     
-                    return generateStateMachineAttribute != null
-                        ? new RapidEnumGeneratorContext(enumSymbol)
-                        : null;
+                    if(generateStateMachineAttribute == null) return null;
+                    
+                    var accessibility = enumSymbol.DeclaredAccessibility;
+                    if (accessibility != Accessibility.Public && accessibility != Accessibility.Internal)
+                        return new RapidEnumGeneratorContext(RapidEnumAnalyzer.MustBeInternalOrPublic,
+                            enumSymbol.Locations.FirstOrDefault() ?? Location.None, enumSymbol.Name);
+
+                    return new RapidEnumGeneratorContext(enumSymbol);
                 })
             .Where(x => x != null);
 
         context.RegisterSourceOutput(enumProvider, static (context, generationContext) =>
         {
-            if (generationContext == null)
+            if (generationContext == null) return;
+            
+            if (!generationContext.DiagnosticDescriptor.Equals(RapidEnumAnalyzer.Default))
             {
+                context.ReportDiagnostic(Diagnostic.Create(generationContext.DiagnosticDescriptor,
+                    generationContext.DiagnosticLocation, generationContext.ClassName));
                 return;
             }
 
@@ -84,181 +111,6 @@ public class RapidEnumGenerator : IIncrementalGenerator
 
     private static string RenderEnumUtils(RapidEnumGeneratorContext context)
     {
-        return $$$"""
-                  // <auto-generated />
-                  
-                  using System;
-                  using System.Collections.Generic;
-                  using System.Runtime.CompilerServices;
-                  using System.Collections.ObjectModel;
-                  
-                  {{{(!string.IsNullOrEmpty(context.NameSpace) ?
-                      $"namespace {context.NameSpace} \n{{" :
-                      "")}}}
-                      
-                    {{{context.Accessibility}}} static partial class {{{context.ClassName}}}
-                    {
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static string ToStringFast(this {{{context.EnumFullName}}} value)
-                        {
-                            return value switch
-                            {
-                                {{{
-                                    string.Join("\n              ", context.EnumNames.Select(x => $"{x} => nameof({x}),"))
-                                }}}
-                                _ => value.ToString()
-                            };
-                        }
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static bool IsDefined({{{context.EnumFullName}}} value)
-                        {
-                            return value switch
-                            {
-                                {{{
-                                    string.Join("\n              ", context.EnumNames.Select(x => $"{x} => true,"))
-                                }}}
-                                _ => false,
-                            };
-                        }
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static bool IsDefined(string name)
-                        {
-                            return name switch
-                            {
-                                {{{
-                                    string.Join("\n              ", context.EnumNames.Select(x => $"nameof({x}) => true,"))
-                                }}}
-                                _ => false,
-                            };
-                        }
-                        
-                        private static readonly ReadOnlyCollection<{{{context.EnumFullName}}}> CacheValues = new ReadOnlyCollection<{{{context.EnumFullName}}}>(new[]
-                        {
-                            {{{
-                                string.Join("\n          ", context.EnumNames.Select(x => $"{x},"))
-                            }}}
-                        });
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static IReadOnlyList<{{{context.EnumFullName}}}> GetValues() => CacheValues;
-                    
-                        private static readonly ReadOnlyCollection<string> CacheNames = new ReadOnlyCollection<string>(new[]
-                        {
-                            {{{
-                                string.Join("\n          ", context.EnumNames.Select(x => $"nameof({x}),"))
-                            }}}
-                        });
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static IReadOnlyList<string> GetNames() => CacheNames;
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static string GetName({{{context.EnumFullName}}} value)
-                        {
-                            return value.ToStringFast();
-                        }
-                        
-                        private static readonly ReadOnlyCollection<Member> CacheMembers =  new ReadOnlyCollection<Member>(new[]
-                        {
-                            {{{
-                                string.Join("\n          ", context.EnumNames.Select(x => $"new Member(nameof({x}), {x}),"))
-                            }}}
-                        });
-                      
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static IReadOnlyList<Member> GetMembers() => CacheMembers;
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static Member GetMember({{{context.EnumFullName}}} value)
-                        {
-                            return value.ToMember();
-                        }
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static Member ToMember(this {{{context.EnumFullName}}} value)
-                        {
-                            return new Member(ToStringFast(value), value);
-                        }
-                      
-                        public sealed class Member
-                        {
-                            public string Name { get; }
-                            public {{{context.EnumFullName}}} Value { get; }
-                
-                            internal Member(string name, {{{context.EnumFullName}}} value)
-                            {
-                                Name = name;
-                                Value = value;
-                            }
-                            
-                            public void Deconstruct(out string name, out {{{context.EnumFullName}}} value)
-                            {
-                                name = Name;
-                                value = Value;
-                            }
-                        }
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static {{{context.EnumFullName}}} Parse(string name, bool ignoreCase = false)
-                        {
-                            if (TryParse(name, out var value, ignoreCase))
-                            {
-                                return value;
-                            }
-                            throw new ArgumentException($"The value '{name}' is not defined in enum '{{{context.EnumFullName}}}'.");
-                        }
-                        
-                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                        public static bool TryParse(
-                            string name,
-                            out {{{context.EnumFullName}}} value,
-                            bool ignoreCase = false)
-                        {
-                            return ignoreCase ? TryParseIgnoreCase(name, out value) : TryParse(name, out value);
-                        }
-                    
-                        private static bool TryParseIgnoreCase(
-                            string name,
-                            out {{{context.EnumFullName}}} value)
-                        {
-                            switch (name)
-                            {
-                                {{{
-                                    string.Join("\n              ", context.EnumNames.Select(x => $"case not null when name.Equals(nameof({x}), StringComparison.OrdinalIgnoreCase):\n                  value = {x};\n                  return true;"))
-                                }}}
-                                case not null when int.TryParse(name, out var val):
-                                    value = ({{{context.EnumFullName}}})val;
-                                    return true;
-                                default:
-                                    value = default;
-                                    return false;
-                            }
-                        }
-                    
-                        private static bool TryParse(
-                            string name,
-                            out {{{context.EnumFullName}}} value)
-                        {
-                            switch (name)
-                            {
-                                {{{
-                                    string.Join("\n              ", context.EnumNames.Select(x => $"case nameof({x}):\n                   value = {x};\n                  return true;"))
-                                }}}
-                                case not null when int.TryParse(name, out var val):
-                                    value = ({{{context.EnumFullName}}})val;
-                                    return true;
-                                default:
-                                    value = default;
-                                    return false;
-                            }
-                        }
-                        
-                        private static readonly Type CacheUnderlyingType = Enum.GetUnderlyingType(typeof({{{context.EnumFullName}}}));
-                        public static Type GetUnderlyingType() => CacheUnderlyingType;
-                    }
-                  {{{(!string.IsNullOrEmpty(context.NameSpace) ? "}" : "")}}}
-                  """;
+        return RapidEnumTemplate.Generate(context);
     }
 }
