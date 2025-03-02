@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using RapidEnum;
 
+[RapidEnum]
+public enum Weather
+{
+    Sunny,
+    Rainy,
+    Cloudy,
+    Snowy
+}
+
 public class Sample : MonoBehaviour
 {
-    [RapidEnum]
-    protected enum Weather
-    {
-        Sunny,
-        Rainy,
-        Cloudy,
-        Snowy
-    }
-
     public void Start()
     {
         // Sunny,Rainy,Cloudy,Snowy
