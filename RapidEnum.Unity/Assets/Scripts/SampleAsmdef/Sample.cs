@@ -5,7 +5,7 @@ using RapidEnum;
 public class Sample : MonoBehaviour
 {
     [RapidEnum]
-    public enum Weather
+    protected enum Weather
     {
         Sunny,
         Rainy,
