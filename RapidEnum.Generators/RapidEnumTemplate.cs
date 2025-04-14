@@ -179,6 +179,18 @@ public static class RapidEnumTemplate
                         
                         private static readonly Type CacheUnderlyingType = Enum.GetUnderlyingType(typeof({{{context.EnumFullName}}}));
                         public static Type GetUnderlyingType() => CacheUnderlyingType;
+                        
+                        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                        public static string GetEnumMemberValue(this {{{context.EnumFullName}}} value)
+                        {
+                            return value switch
+                            {
+                                {{{
+                                    string.Join("\n              ", context.EnumNames.Zip(context.EnumMemberValues, (x, y) => $"{x} => {(y == null ? "null" : "\"" + y + "\"")},"))
+                                }}}
+                                _ => null
+                            };
+                        }
                     }
                   {{{(!string.IsNullOrEmpty(context.NameSpace) ? "}" : "")}}}
                   """;

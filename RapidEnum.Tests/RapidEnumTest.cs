@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Runtime.Serialization;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 
@@ -10,7 +11,9 @@ public class RapidEnumTest
     [RapidEnum]
     internal enum Sample
     {
+        [EnumMember(Value = "a")]
         A,
+        [EnumMember(Value = "b")]
         B,
         C
     }
@@ -202,5 +205,13 @@ public class RapidEnumTest
 
         var underlyingType2 = SampleWithByteEnumExtensions.GetUnderlyingType();
         Assert.That(underlyingType2.FullName, Is.EqualTo("System.Byte"));
+    }
+
+    [Test]
+    public void GetEnumMemberValueTest()
+    {
+        Assert.That(Sample.A.GetEnumMemberValue(), Is.EqualTo("a"));
+        Assert.That(Sample.B.GetEnumMemberValue(), Is.EqualTo("b"));
+        Assert.That(Sample.C.GetEnumMemberValue(), Is.EqualTo(null));
     }
 }

@@ -15,6 +15,7 @@ public record RapidEnumGeneratorContext
         Accessibility = null;
         EnumFullName = "";
         EnumNames = [];
+        EnumMemberValues = [];
     }
     
     public RapidEnumGeneratorContext(INamedTypeSymbol enumSymbol)
@@ -31,6 +32,7 @@ public record RapidEnumGeneratorContext
 
         EnumFullName = enumSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         EnumNames = GetEnumNames(enumSymbol);
+        EnumMemberValues = GetEnumMemberValues(enumSymbol);
     }
 
     public RapidEnumGeneratorContext(INamedTypeSymbol targetSymbol, INamedTypeSymbol enumSymbol)
@@ -47,6 +49,7 @@ public record RapidEnumGeneratorContext
 
         EnumFullName = enumSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         EnumNames = GetEnumNames(enumSymbol);
+        EnumMemberValues = GetEnumMemberValues(enumSymbol);
     }
 
     public string GeneratedFileName => $"{ClassName}.g.cs";
@@ -62,6 +65,7 @@ public record RapidEnumGeneratorContext
 
     public string EnumFullName { get; }
     public string[] EnumNames { get; }
+    public string?[] EnumMemberValues { get; }
 
     public virtual bool Equals(RapidEnumGeneratorContext? other)
     {
@@ -94,6 +98,19 @@ public record RapidEnumGeneratorContext
         return enumSymbol.GetMembers()
             .Where(x => x.Kind == SymbolKind.Field && x is IFieldSymbol { HasConstantValue: true })
             .Select(x => x.ToDisplayString())
+            .ToArray();
+    }
+
+    private static string?[] GetEnumMemberValues(INamedTypeSymbol enumSymbol)
+    {
+        return enumSymbol.GetMembers()
+            .Select(x =>
+            {
+                return x.GetAttributes()
+                    .Where(static x => x.AttributeClass?.Name == nameof(System.Runtime.Serialization.EnumMemberAttribute))
+                    .Select(static x => x.NamedArguments[0].Value.Value?.ToString())
+                    .FirstOrDefault();
+            })
             .ToArray();
     }
 
