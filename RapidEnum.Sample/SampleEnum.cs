@@ -22,7 +22,7 @@ public class SampleEnum
     {
         [EnumMember(Value = "sun")]
         Sun,
-        [EnumMember(Value = "cloud")]
+        [EnumMember]
         Cloud,
         [EnumMember(Value = "rain")]
         Rain,

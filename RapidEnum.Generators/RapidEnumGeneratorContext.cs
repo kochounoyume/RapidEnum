@@ -108,7 +108,7 @@ public record RapidEnumGeneratorContext
             {
                 return x.GetAttributes()
                     .Where(static x => x.AttributeClass?.Name == nameof(System.Runtime.Serialization.EnumMemberAttribute))
-                    .Select(static x => x.NamedArguments[0].Value.Value?.ToString())
+                    .Select(static x => x.NamedArguments.FirstOrDefault().Value.Value?.ToString())
                     .FirstOrDefault();
             })
             .ToArray();

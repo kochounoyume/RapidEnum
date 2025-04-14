@@ -14,7 +14,7 @@ public class RapidEnumTestWithFastEnum
     {
         [EnumMember(Value = "a")]
         A,
-        [EnumMember(Value = "b")]
+        [EnumMember()]
         B,
         C
     }

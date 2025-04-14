@@ -13,7 +13,7 @@ public class RapidEnumTest
     {
         [EnumMember(Value = "a")]
         A,
-        [EnumMember(Value = "b")]
+        [EnumMember]
         B,
         C
     }
@@ -211,7 +211,7 @@ public class RapidEnumTest
     public void GetEnumMemberValueTest()
     {
         Assert.That(Sample.A.GetEnumMemberValue(), Is.EqualTo("a"));
-        Assert.That(Sample.B.GetEnumMemberValue(), Is.EqualTo("b"));
+        Assert.That(Sample.B.GetEnumMemberValue(), Is.EqualTo(null));
         Assert.That(Sample.C.GetEnumMemberValue(), Is.EqualTo(null));
     }
 }
