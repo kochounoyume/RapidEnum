@@ -142,4 +142,11 @@ public class RapidEnumTestWithSystem
         var underlyingType = DateTimeKindEnumExtensions.GetUnderlyingType();
         Assert.That(underlyingType.FullName, Is.EqualTo("System.Int32"));
     }
+
+    [Test]
+    public void GetEnumMemberValueTest()
+    {
+        Assert.That(DateTimeKind.Utc.GetEnumMemberValue(), Is.EqualTo(null)); 
+        Assert.That(((DateTimeKind)10).GetEnumMemberValue(), Is.EqualTo(null));
+    }
 }

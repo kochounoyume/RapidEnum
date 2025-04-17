@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Runtime.Serialization;
 using FastEnumUtility;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
@@ -11,7 +12,9 @@ public class RapidEnumTestWithFastEnum
     [RapidEnum]
     internal enum Target
     {
+        [EnumMember(Value = "a")]
         A,
+        [EnumMember()]
         B,
         C
     }
@@ -198,5 +201,14 @@ public class RapidEnumTestWithFastEnum
         var expected = FastEnum.GetUnderlyingType<Target>();
         
         Assert.That(actual.FullName, Is.EqualTo(expected.FullName));
+    }
+
+    [Test]
+    public void GetEnumMemberValueTest()
+    {
+        Assert.That(Target.A.GetEnumMemberValue(), Is.EqualTo(Target.A.GetEnumMemberValue(false)));
+        Assert.That(Target.B.GetEnumMemberValue(), Is.EqualTo(Target.B.GetEnumMemberValue(false)));
+        Assert.That(Target.C.GetEnumMemberValue(), Is.EqualTo(Target.C.GetEnumMemberValue(false)));
+        Assert.That(((Target)10).GetEnumMemberValue(), Is.EqualTo(((Target)10).GetEnumMemberValue(false)));
     }
 }

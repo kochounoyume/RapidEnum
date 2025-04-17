@@ -178,4 +178,11 @@ public class RapidEnumTestWithThirdParty
         var underlyingType2 = JsonTokenTypeEnumExtensions.GetUnderlyingType();
         Assert.That(underlyingType2.FullName, Is.EqualTo("System.Byte"));
     }
+
+    [Test]
+    public void GetEnumMembersTest()
+    {
+        Assert.That(JsonTokenType.Comment.GetEnumMemberValue(), Is.EqualTo(null)); 
+        Assert.That(((JsonTokenType)100).GetEnumMemberValue(), Is.EqualTo(null));
+    }
 }

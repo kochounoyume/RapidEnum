@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text.Json;
 
 namespace RapidEnum.Sample;
@@ -19,8 +20,11 @@ public class SampleEnum
     [RapidEnum]
     public enum Weather
     {
+        [EnumMember(Value = "sun")]
         Sun,
+        [EnumMember]
         Cloud,
+        [EnumMember(Value = "rain")]
         Rain,
         Snow
     }
@@ -48,6 +52,9 @@ public class SampleEnum
         // True
         // Sun
         bool tryParse = WeatherEnumExtensions.TryParse("Sun", out Weather value);
+        
+        // sun
+        string enumMemberValue = Weather.Sun.GetEnumMemberValue();
     }
 
     public void SampleUse2()
