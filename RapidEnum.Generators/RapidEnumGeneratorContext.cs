@@ -80,7 +80,8 @@ public record RapidEnumGeneratorContext
                EqualityComparer<string?>.Default.Equals(NameSpace, other.NameSpace) &&
                EqualityComparer<string?>.Default.Equals(Accessibility, other.Accessibility) &&
                EqualityComparer<string>.Default.Equals(EnumFullName, other.EnumFullName) &&
-               EnumNames.SequenceEqual(other.EnumNames);
+               EnumNames.SequenceEqual(other.EnumNames) &&
+               EnumMemberValues.SequenceEqual(other.EnumMemberValues);
     }
 
     private static string GetAccessibilityName(Accessibility accessibility)
