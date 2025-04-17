@@ -57,8 +57,8 @@ jobs:
           git config --global user.name "${USERNAME}"
           git config --global user.email "${EMAIL}"
           git switch -c "${BRANCH}"
-          git add RapidEnum.NuGet/RapidEnum.nuspec
-          git add RapidEnum.Unity/Packages/com.hanachiru.rapidenum/package.json
+          git add -f RapidEnum.NuGet/RapidEnum.nuspec
+          git add -f RapidEnum.Unity/Packages/com.hanachiru.rapidenum/package.json
           message="Update v${VERSION}"
           git commit -m "${message}"
           git push origin "${BRANCH}"
