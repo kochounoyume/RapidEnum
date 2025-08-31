@@ -27,6 +27,8 @@ RapidEnum は[FastEnum](https://github.com/xin9le/FastEnum)に多大の影響を
 - [使い方](#使い方)
   - [基本的な使い方](#基本的な使い方)
   - [任意の列挙型に利用する方法](#任意の列挙型に利用する方法)
+  - [Name と Value をペアで取得する](#Name-と-Value-をペアで取得する)
+  - [EnumMemberAttributeの値の取得](#EnumMemberAttributeの値の取得)
 - [パフォーマンス比較](#パフォーマンス比較)
 
 # 要件
@@ -155,6 +157,29 @@ foreach (WeatherEnumExtensions.Member item in WeatherEnumExtensions.GetMembers()
 {
     Console.WriteLine($"Name : {item.Name}, Value : {item.Value}");
 }
+```
+
+## EnumMemberAttributeの値の取得
+[EnumMemberAttribute](https://learn.microsoft.com/ja-jp/dotnet/api/system.runtime.serialization.enummemberattribute?view=net-9.0)を利用している場合は、`EnumMemberAttribute`の`Value`プロパティの値を取得することができます。
+```csharp
+[RapidEnum]
+public enum Weather
+{
+    [EnumMember(Value = "sun")]
+    Sun,
+    [EnumMember]
+    Cloud,
+    [EnumMember(Value = "rain")]
+    Rain,
+    Snow
+}
+```
+```csharp
+// sun
+string enumMemberValue = Weather.Sun.GetEnumMemberValue();
+
+// null
+string enumMemberValue = Weather.Cloud.GetEnumMemberValue();
 ```
 
 # パフォーマンス比較
