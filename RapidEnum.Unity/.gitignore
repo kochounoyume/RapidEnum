@@ -188,3 +188,4 @@ sysinfo.txt
 # End of https://www.toptal.com/developers/gitignore/api/macos,rider,unity
 
 !*.meta
+!Packages/com.hanachiru.rapidenum/
