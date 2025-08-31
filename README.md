@@ -159,7 +159,7 @@ foreach (WeatherEnumExtensions.Member item in WeatherEnumExtensions.GetMembers()
 ```
 
 ## Use EnumMemberAttribute
-If you use [EnumMemberAttribute](https://learn.microsoft.com/ja-jp/dotnet/api/system.runtime.serialization.enummemberattribute?view=net-9.0), you can get the Value property of EnumMemberAttribute.
+If you use [EnumMemberAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.serialization.enummemberattribute?view=net-9.0), you can get the Value property of EnumMemberAttribute.
 ```csharp
 [RapidEnum]
 public enum Weather
