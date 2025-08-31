@@ -50,12 +50,9 @@ https://github.com/hanachiru/RapidEnum.git?path=/RapidEnum.Unity/Packages/com.ha
 ![UPM](./Images/UPM.png)
 
 ### asmdef settings
-If you have not created `.asmdef`, the following is not relevant.
-
-If you have `Override References` in the `.asmdef` switched on, you need to add `RapidEnum.Core.dll` to the `Assembly References`.
-
-<img src="./Images/AssemblyReferences.png" width="300" />
-
+If you have created a `.asmdef`, you need to add `RapidEnum` to the Assembly Definition References.  
+ 
+<img src="./Images/Asmdef.png" width="300" />
 # How to use
 
 ## Basic usage

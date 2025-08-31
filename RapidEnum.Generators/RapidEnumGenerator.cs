@@ -10,6 +10,12 @@ public class RapidEnumGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        context.RegisterPostInitializationOutput(static initContext =>
+        {
+            var source = RapidEnumTemplate.GenerateAttributes();
+            initContext.AddSource("RapidEnumAttributes.g.cs", source);
+        });
+
         var classProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName($"{Constants.AttributeNameSpace}.{Constants.MarkerAttributeName}",
                 static (node, token) =>
