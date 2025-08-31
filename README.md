@@ -27,6 +27,8 @@ RapidEnum is heavily influenced by [FastEnum](https://github.com/xin9le/FastEnum
 - [How to use](#How-to-use)
   - [Basic usage](#Basic-usage)
   - [How to use it for any enum](#How-to-use-it-for-any-enum)
+  - [Get Name and Value as a pair](#Get-Name-and-Value-as-a-pair)
+  - [Use EnumMemberAttribute](#Use-EnumMemberAttribute)
 - [Performance comparison](#Performance-comparison)
 
 # Requirements
@@ -154,6 +156,26 @@ foreach (WeatherEnumExtensions.Member item in WeatherEnumExtensions.GetMembers()
 {
     Console.WriteLine($"Name : {item.Name}, Value : {item.Value}");
 }
+```
+
+## Use EnumMemberAttribute
+If you use [EnumMemberAttribute](https://learn.microsoft.com/ja-jp/dotnet/api/system.runtime.serialization.enummemberattribute?view=net-9.0), you can get the Value property of EnumMemberAttribute.
+```csharp
+[RapidEnum]
+public enum Weather
+{
+    [EnumMember(Value = "sun")]
+    Sun,
+    [EnumMember]
+    Cloud,
+    [EnumMember(Value = "rain")]
+    Rain,
+    Snow
+}
+```
+```csharp
+// sun
+string enumMemberValue = Weather.Sun.GetEnumMemberValue();
 ```
 
 # Performance comparison
