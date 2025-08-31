@@ -1,5 +1,10 @@
 # RapidEnum
 
+[![nuget](https://img.shields.io/nuget/v/RapidEnum)](https://www.nuget.org/packages/RapidEnum)
+[![Releases](https://img.shields.io/github/release/hanachiru/RapidEnum.svg)](https://github.com/hanachiru/RapidEnum/releases)
+[![license](https://img.shields.io/badge/LICENSE-MIT-green.svg)](LICENSE)
+[![test](https://github.com/hanachiru/RapidEnum/actions/workflows/test.yml/badge.svg)](https://github.com/hanachiru/RapidEnum/actions/workflows/test.yml)
+
 [日本語版](README.jp.md)
 
 RapidEnum is a Source Generator that provides fast-running enum utilities for C#/.NET. It is faster than the [.NET API](https://learn.microsoft.com/en-us/dotnet/api/system.enum?view=net-8.0) and achieves zero allocation for all methods.
@@ -53,6 +58,7 @@ https://github.com/hanachiru/RapidEnum.git?path=/RapidEnum.Unity/Packages/com.ha
 If you have created a `.asmdef`, you need to add `RapidEnum` to the Assembly Definition References.  
  
 <img src="./Images/Asmdef.png" width="300" />
+
 # How to use
 
 ## Basic usage
