@@ -1,11 +1,13 @@
 {
     "name": "Scripts.Sample",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "RapidEnum"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "overrideReferences": false,
     "precompiledReferences": [
         "RapidEnum.Core.dll"
     ],

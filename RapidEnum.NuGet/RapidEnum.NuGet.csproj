@@ -15,7 +15,6 @@
 
 <ItemGroup>
     <ProjectReference Include="..\RapidEnum.Generators\RapidEnum.Generators.csproj" Private="true"/>
-    <ProjectReference Include="..\RapidEnum.Core\RapidEnum.Core.csproj" Private="true"/>
 </ItemGroup>
 
 </Project>
