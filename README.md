@@ -176,6 +176,9 @@ public enum Weather
 ```csharp
 // sun
 string enumMemberValue = Weather.Sun.GetEnumMemberValue();
+
+// null
+string enumMemberValue = Weather.Cloud.GetEnumMemberValue();
 ```
 
 # Performance comparison
