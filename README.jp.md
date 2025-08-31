@@ -1,5 +1,10 @@
 # RapidEnum
 
+[![nuget](https://img.shields.io/nuget/v/RapidEnum)](https://www.nuget.org/packages/RapidEnum)
+[![Releases](https://img.shields.io/github/release/hanachiru/RapidEnum.svg)](https://github.com/hanachiru/RapidEnum/releases)
+[![license](https://img.shields.io/badge/LICENSE-MIT-green.svg)](LICENSE)
+[![test](https://github.com/hanachiru/RapidEnum/actions/workflows/test.yml/badge.svg)](https://github.com/hanachiru/RapidEnum/actions/workflows/test.yml)
+
 [English](README.md)
 
 RapidEnum は、C#/.NET 用の高速に動作する列挙型ユーティリティを提供するソースジェネレーターです。[.NET 標準の API](https://learn.microsoft.com/en-us/dotnet/api/system.enum?view=net-8.0)よりも高速で、全てのメソッドでゼロアロケーションを達成しています。
@@ -50,6 +55,7 @@ https://github.com/hanachiru/RapidEnum.git?path=/RapidEnum.Unity/Packages/com.ha
 ![UPM](./Images/UPM.png)
 
 ### asmdefの設定
+
 `.asmdef`を作成している場合は、`Assembly Definition References`に`RapidEnum`を追加する必要があります。  
 
 <img src="./Images/Asmdef.png" width="300" />
